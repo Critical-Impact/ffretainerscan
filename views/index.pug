@@ -1,56 +1,80 @@
 html
-	head
-		title= title
-		link(href="css/bootstrap.min.css" rel="stylesheet")
-		script(src="js/jquery-3.1.0.min.js" type="text/javascript")
-		script(src="js/bootstrap.min.js" type="text/javascript")
-		meta(charset="utf-8")
-		meta(http-equiv="X-UA-Compatible" content="IE=edge")
-		meta(name="viewport" content="width=device-width, initial-scale=1")
-	body
-		div(class="container")
-			h1 Retainer Inventory Scanner
-			a(class="bookmarklet" href="javascript:(function()%7Bvar%20items%20%3D%20jQuery(%22%23retainer_baggage_tbody%20tr%20.ic_reflection_box%22).toArray()%3Balert(%22Now%20running%20script%2C%20please%20wait%22)%3Bfunction%20loadItem(item)%7Bif(items.length%20%3D%3D%3D%200)%7BjQuery(%22html%22).text(jQuery(%22html%22).html())%3Balert(%22all%20done%20yo!%20copy%20whats%20now%20on%20the%20page%20into%20the%20app%22)%3B%7Delse%7BjQuery.ajax(%7Bcache%3A%20false%2Ctype%3A%20'get'%2Curl%3A%20%24(item).data('lazy_load_url')%2CdataType%3A%20'html'%2Csuccess%3A%20function(data)%20%7B%24(item).append(data)%3BloadItem(items.pop())%3B%7D%7D)%3B%7D%7DloadItem(items.pop())%7D)()") drag me to the bookmark bar
-			p Drag the bookmark to the bookmark bar. Goto the retainer page on lodestone. Click the bookmark bar button. Wait a good couple of minutes for it to load the HQ data from each item. The page will turn into HTML code. Copy the entire page and paste it into the box below. As you add retainers, conflicts will be calculated automatically.
-			if retainers.length !== 0
-				p You currently have scanned #{retainers.length} retainers. Click finish to scan for duplicates or click Submit HTML to submit another retainer's information.
-			else
-				p You currently have scanned no retainers. Click Submit HTML to submit a retainer's information.
-			form(method='POST')
-				textarea(name='html')
-				br
-				br
-				input(type='submit' value='Submit HTML') 
-			endform
-			
-			h1 Current Inventory
-			ul(class="nav nav-tabs")
-				each retainer,index in retainers
-					li(role="presentation" class=(index === 0 ? "active" : ""))
-						a(href="#" + retainer.name aria-controls=retainer.name role="tab" data-toggle="tab")=retainer.name
-				li(role="presentation" class=(index === 0 ? "active" : ""))
-					a(href="#conflicts" aria-controls="conflicts" role="tab" data-toggle="tab") Conflicts
-			div(class="tab-content")
-				each retainer, index in retainers
-					div(role="tabpanel" class="tab-pane" class=(index === 0 ? "active" : "") id=retainer.name)
-						table(class="table table-striped")
-							each item in retainer.items
-								tr
-									td
-										p=item.name
-									td
-										p=item.quantity
-									td
-										p=item.isHQ
-				div(role="tabpanel" class="tab-pane" id="conflicts")
-					table(class="table table-striped")
-						each item in conflicts
-							tr
-								td
-									p=item.name
-								td
-									p=item.retainer
-								td
-									p=item.isHQ
-				
-			
+    head
+        title="FFXIV Retainer Scanner"
+        link(href="css/bootstrap.min.css" rel="stylesheet")
+        script(src="js/jquery-3.1.0.min.js" type="text/javascript")
+        script(src="js/bootstrap.min.js" type="text/javascript")
+        meta(charset="utf-8")
+        meta(http-equiv="x-ua-compatible" content="ie=edge")
+        meta(name="viewport" content="width=device-width, initial-scale=1")
+    body
+        div(class="container")
+            h1 Retainer Inventory Scanner
+            a(href="clear-retainer-data") Clear retainer data
+            br
+            a(class="bookmarklet" href="javascript:(function()%7bvar%20items%20%3d%20jquery(%22%23retainer_baggage_tbody%20tr%20.ic_reflection_box%22).toarray()%3balert(%22now%20running%20script%2c%20please%20wait%22)%3bfunction%20loaditem(item)%7bif(items.length%20%3d%3d%3d%200)%7bjquery(%22html%22).text(jquery(%22html%22).html())%3balert(%22all%20done%20yo!%20copy%20whats%20now%20on%20the%20page%20into%20the%20app%22)%3b%7delse%7bjquery.ajax(%7bcache%3a%20false%2ctype%3a%20'get'%2curl%3a%20%24(item).data('lazy_load_url')%2cdatatype%3a%20'html'%2csuccess%3a%20function(data)%20%7b%24(item).append(data)%3bloaditem(items.pop())%3b%7d%7d)%3b%7d%7dloaditem(items.pop())%7d)()") Drag me to the Bookmark Bar
+            p Drag the bookmark to the bookmark bar. goto the retainer page on lodestone. click the bookmark bar button. wait a good couple of minutes for it to load the hq data from each item. the page will turn into html code. copy the entire page and paste it into the box below. as you add retainers, conflicts will be calculated automatically.
+            if retainers.length !== 0
+                p You currently have scanned #{retainers.length} retainers. click finish to scan for duplicates or click submit html to submit another retainer's information.
+            else
+                p You currently have scanned no retainers. click submit html to submit a retainer's information.
+            form(method='post')
+                textarea(name='html')
+                br
+                br
+                input(type='submit' value='Submit Retainer Data')
+            endform
+
+            h1 Current Inventory
+            ul(class="nav nav-tabs")
+                each retainer,index in retainers
+                    li(role="presentation" class=(index === 0 ? "active" : ""))
+                        a(href="#" + retainer.name aria-controls=retainer.name role="tab" data-toggle="tab")=retainer.name
+                li(role="presentation" class=(index === 0 ? "active" : ""))
+                    a(href="#conflicts" aria-controls="conflicts" role="tab" data-toggle="tab") Conflicts
+            div(class="tab-content")
+                each retainer, index in retainers
+                    div(role="tabpanel" class="tab-pane" class=(index === 0 ? "active" : "") id=retainer.name)
+                        table(class="table table-striped")
+                            thead
+                                tr
+                                    th
+                                        p="Name"
+                                    th
+                                        p="Quantity"
+                                    th
+                                        p="Is HQ?"
+                            each item in retainer.items
+                                tbody
+                                    tr
+                                        td
+                                            p=item.name
+                                        td
+                                            p=item.quantity
+                                        td
+                                            p=(item.isHQ === false ? "No" : "Yes")
+                div(role="tabpanel" class="tab-pane" id="conflicts")
+                    table(class="table table-striped")
+                        thead
+                            tr
+                                th
+                                    p="Name"
+                                each retainer, index in retainers
+                                    th
+                                        p=retainer.name
+                                th
+                                    p="Is HQ?"
+
+                        tbody
+                            each item in conflicts
+                                tr
+                                    td
+                                        p=item.name
+                                    each retainer, index in retainers
+                                        td
+                                            p=item[retainer.name]
+                                    td
+                                        p=item.retainer
+                                    td
+                                        p=(item.isHQ === false ? "No" : "Yes")
+
