@@ -74,10 +74,11 @@ var MyRequestsCompleted = (function () {
 */
 function calculateConflicts(retainers) {
     var conflicts = {};
+    retainers = _.clone(retainers);
     _.each(retainers, function (retainer) {
         _.each(retainer.items, function (item) {
             _.each(retainers, function (retainer2) {
-                if (retainer2 !== retainer) {
+                if (retainer2 !== retainer && (retainer.scanned != true || typeof(retainer.scanned) === "undefined")) {
                     _.each(retainer2.items, function (item2) {
                         if (item2.name == item.name && item2.isHQ == item.isHQ) {
                             //If the item is already in the conflicts list
@@ -97,7 +98,8 @@ function calculateConflicts(retainers) {
                     });
                 }
             });
-        })
+        });
+        retainer.scanned = true;
     });
     console.log(conflicts);
     return conflicts;
