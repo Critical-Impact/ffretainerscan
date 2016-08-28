@@ -78,7 +78,7 @@ function calculateConflicts(retainers) {
     _.each(retainers, function (retainer) {
         _.each(retainer.items, function (item) {
             _.each(retainers, function (retainer2) {
-                if (retainer2 !== retainer && (retainer.scanned != true || typeof(retainer.scanned) === "undefined")) {
+                if (retainer2 !== retainer && (retainer2.scanned != true || typeof(retainer2.scanned) === "undefined")) {
                     _.each(retainer2.items, function (item2) {
                         if (item2.name == item.name && item2.isHQ == item.isHQ) {
                             //If the item is already in the conflicts list
