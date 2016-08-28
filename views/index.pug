@@ -64,6 +64,8 @@ html
                                         p=retainer.name
                                 th
                                     p="Is HQ?"
+                                th
+                                    p="Have Moved"
 
                         tbody
                             each item in conflicts
@@ -77,4 +79,6 @@ html
                                         p=item.retainer
                                     td
                                         p=(item.isHQ === false ? "No" : "Yes")
+                                    td
+                                        input(type="checkbox")
 
