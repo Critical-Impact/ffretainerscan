@@ -72,17 +72,67 @@ var MyRequestsCompleted = (function () {
     };
 })();
 */
-function calculateConflicts(retainers) {
+
+function calculateConflicts(retainers)
+{
+    var allItems = {};
+    _.each(retainers, function(retainer){
+        _.each(retainer.items, function(item)
+        {
+            if (!_.has(allItems, item.name + (item.isHQ ? "_hq" : ""))) {
+                allItems[item.name + (item.isHQ ? "_hq" : "")] = {
+                    name: item.name,
+                    isHQ: item.isHQ
+                };
+            }
+            var current = allItems[item.name + (item.isHQ ? "_hq" : "")];
+            if (!_.has(current, retainer.name)) {
+                current[retainer.name] = 0;
+            }
+            current[retainer.name] += parseInt(item.quantity);
+        })
+    });
+
+    _.each(allItems, function(item)
+    {
+        item.conflicts = -1;
+        _.each(retainers, function(retainer)
+        {
+            if(typeof(item[retainer.name]) !== "undefined")
+            {
+                item.conflicts++;
+            }
+        });
+    });
+    return _.filter(allItems, function(item)
+    {
+        return item.conflicts != 0;
+    })
+}
+
+function calculateConflicts2(retainers) {
     var conflicts = {};
     retainers = _.clone(retainers);
     _.each(retainers, function (retainer) {
-        _.each(retainer.items, function (item) {
-            _.each(retainers, function (retainer2) {
-                if (retainer2 !== retainer && (retainer2.scanned != true || typeof(retainer2.scanned) === "undefined")) {
+        _.each(retainer.items, function (item2) {
+            item2.scanned = false;
+        });
+        _.each(retainers, function (retainer2) {
+            retainer[retainer2.name] = false;
+        });
+    });
+    _.each(retainers, function (retainer) {
+        console.log("Scanning " + retainer.name + "'s inventory");
+        _.each(retainers, function (retainer2) {
+            console.log(typeof(retainer2[retainer.name]));
+            if (retainer2 !== retainer && retainer2[retainer.name] != true) {
+                console.log("Comparing against " + retainer2.name + "'s inventory");
+                _.each(retainer.items, function (item) {
+
                     _.each(retainer2.items, function (item2) {
-                        if (item2.name == item.name && item2.isHQ == item.isHQ) {
+                        if (item2.name == item.name && item2.isHQ == item.isHQ && item.scanned == false && item2.scanned == false) {
                             //If the item is already in the conflicts list
-                            if (!_.has(conflicts, item.name+ (item.isHQ ? "_hq" : ""))) {
+                            if (!_.has(conflicts, item.name + (item.isHQ ? "_hq" : ""))) {
                                 conflicts[item.name + (item.isHQ ? "_hq" : "")] = {
                                     name: item.name,
                                     quantity: 0,
@@ -93,15 +143,21 @@ function calculateConflicts(retainers) {
                             if (!_.has(current, retainer.name)) {
                                 current[retainer.name] = 0;
                             }
+                            if (!_.has(current, retainer2.name)) {
+                                current[retainer2.name] = 0;
+                            }
+                            item.scanned = true;
+                            item2.scanned = true;
                             current[retainer.name] += parseInt(item.quantity);
+                            current[retainer2.name] += parseInt(item2.quantity);
+                            console.log(current);
                         }
                     });
-                }
-            });
+                });
+            }
+            retainer[retainer2.name] = true;
         });
-        retainer.scanned = true;
     });
-    console.log(conflicts);
     return conflicts;
 }
 
